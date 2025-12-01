@@ -2,33 +2,52 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEHA AI v17.8 - Genarted by Sertaç GÜL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DEHA AI">
+    
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/240/artificial-intelligence.png">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/96/artificial-intelligence.png">
+    
+    <link rel="manifest" href="manifest.json">
+
+    <title>DEHA AI v17.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
-    </script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';</script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; 
+            color: #e2e8f0;
+            /* iOS Alt Çizgi ve Üst Çentik Koruması */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            height: 100vh;
+            overflow: hidden; 
+            -webkit-user-select: none; /* Mobilde metin seçimini engelle (app hissi için) */
+            user-select: none;
+        }
         
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        /* App Like Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-panel { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        .highlight-text { background-color: #facc15; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px; box-shadow: 0 0 5px #facc15; }
+        .highlight-text { background-color: #facc15; color: #000; font-weight: bold; padding: 0 2px; border-radius: 2px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
@@ -40,720 +59,326 @@
         .sidebar-closed { transform: translateX(-100%); }
         .sidebar-open { transform: translateX(0); }
         
-        /* Mermaid / Diyagram Özelleştirmeleri */
-        #diagram-container { 
-            /* Flex center yerine block yapıp margin ile ortalamayı deniyoruz ki scroll çalışsın */
-            display: block; 
-            width: 100%;
-            height: 100%;
-            padding: 40px;
-        }
-        
-        .mermaid { 
-            background-color: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            min-width: 2000px; /* A3 Genişlik */
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-        }
-
-        .mermaid svg { 
-            max-width: none !important; 
-            font-family: 'Inter', sans-serif !important;
-        }
-        
+        #diagram-container { display: block; width: 100%; height: 100%; padding: 20px; overflow: auto; -webkit-overflow-scrolling: touch; }
+        .mermaid { background-color: #f8fafc; padding: 20px; border-radius: 8px; min-width: 2000px; box-shadow: 0 0 50px rgba(0,0,0,0.5); display: flex; justify-content: center; }
+        .mermaid svg { max-width: none !important; font-family: 'Inter', sans-serif !important; }
         .node rect, .node circle, .node polygon { stroke-width: 3px !important; }
         .nodeLabel { font-size: 24px !important; font-weight: bold !important; }
         .edgeLabel { font-size: 18px !important; background-color: white !important; padding: 4px; }
+        button { touch-action: manipulation; }
+        /* Seçilebilir metin alanları (Inputlar hariç seçim kapalıydı) */
+        #simple-viewer-content, #user-input, .selectable { -webkit-user-select: text; user-select: text; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden relative">
+<body class="flex flex-col relative">
 
-    <header class="h-16 border-b border-slate-700 bg-slate-900 flex items-center justify-between px-6 z-20 shadow-lg relative">
-        <div class="flex items-center gap-4">
-            <button id="history-toggle-btn" class="text-slate-300 hover:text-white p-2 rounded-md hover:bg-slate-800 transition" title="Geçmiş">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-900/20">
-                    <i class="fa-solid fa-brain text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 tracking-wide">DEHA AI<span class="text-[10px] text-indigo-300 font-normal border border-indigo-500/30 px-1 rounded ml-1">Eğitim ve Yapay Zeka Asistanı</span></h1>
-                </div>
+    <header class="h-14 border-b border-slate-700 bg-slate-900 flex items-center justify-between px-4 z-20 shadow-lg flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <button id="history-toggle-btn" class="text-slate-300 hover:text-white p-2 rounded-md transition"><i class="fa-solid fa-bars text-xl"></i></button>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/50"><i class="fa-solid fa-brain text-white text-sm"></i></div>
+                <h1 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 tracking-wide">DEHA</h1>
             </div>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="relative group flex items-center gap-2">
-                <input type="password" id="api-key-input" placeholder="API Kodu Giriniz" 
-                       class="bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-md pl-3 pr-2 py-2 w-32 focus:w-64 transition-all outline-none focus:border-indigo-500 shadow-inner">
-                <button id="save-api-key-btn" class="bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white p-2 rounded-md border border-slate-600 transition text-xs" title="Kaydet"><i class="fa-solid fa-check"></i></button>
-            </div>
-            <div class="h-6 w-px bg-slate-700 mx-1"></div>
-            <button id="clear-data-btn" class="text-xs text-red-400 hover:text-red-300 underline mr-2">Temizle</button>
-            <label for="file-upload" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md transition shadow-lg flex items-center gap-2 text-sm font-bold">
-                <i class="fa-solid fa-folder-open"></i> <span>Belge Yükle</span>
-            </label>
-            <input type="file" id="file-upload" multiple accept=".pdf, .ppt, .pptx, .doc, .docx, .xls, .xlsx, .xlsm, .txt, .rtf, .jpg, .jpeg, .png" class="hidden">
-            <div id="file-count" class="text-xs font-mono text-blue-400 bg-blue-900/30 px-2 py-1 rounded">0 Dosya</div>
+        <div class="flex items-center gap-3">
+            <button id="save-api-key-btn" class="bg-slate-800 text-slate-300 p-2 rounded border border-slate-600 text-xs" title="API Key"><i class="fa-solid fa-key"></i></button>
+            <input type="password" id="api-key-input" class="hidden bg-slate-800 border border-slate-600 text-white text-xs rounded p-2 absolute right-14 top-14 w-48 z-50 shadow-xl" placeholder="API Key Gir ve Enter'a bas">
+            <label for="file-upload" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-md transition shadow-lg shadow-blue-500/30"><i class="fa-solid fa-plus"></i></label>
+            <input type="file" id="file-upload" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.png" class="hidden">
         </div>
     </header>
 
-    <div id="history-sidebar" class="absolute top-16 left-0 bottom-0 w-80 bg-slate-900 border-r border-slate-700 z-30 sidebar sidebar-closed flex flex-col shadow-2xl">
+    <div id="history-sidebar" class="absolute top-14 left-0 bottom-0 w-72 bg-slate-900 border-r border-slate-700 z-30 sidebar sidebar-closed flex flex-col shadow-2xl">
         <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900">
-            <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Geçmiş</h2>
-            <button id="close-history-btn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-sm font-bold text-slate-200 uppercase">Geçmiş</h2>
+            <button id="close-history-btn" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="history-list" class="flex-1 overflow-y-auto p-2 space-y-2"><p class="text-xs text-slate-600 text-center mt-4">Henüz geçmiş yok.</p></div>
+        <div id="history-list" class="flex-1 overflow-y-auto p-2 space-y-2"><p class="text-xs text-slate-600 text-center mt-4">Geçmiş yok</p></div>
     </div>
 
-    <div class="flex-1 flex overflow-hidden relative z-10">
-        <div class="w-1/2 flex flex-col border-r border-slate-700 relative">
+    <div class="flex-1 flex overflow-hidden relative z-10 flex-col md:flex-row">
+        <div class="hidden md:flex w-1/2 flex-col border-r border-slate-700 relative">
             <div class="flex-1 relative bg-slate-900 overflow-hidden group cursor-default">
                 <canvas id="knowledge-graph" class="absolute inset-0 w-full h-full"></canvas>
-                <div class="absolute top-4 left-4 bg-black/50 p-2 rounded text-xs text-slate-400 pointer-events-none select-none z-10 border border-white/10">
-                    <i class="fa-solid fa-network-wired mr-1 text-indigo-400"></i> DEHA Yapay Sinir Ağı & Hafıza Reaktörü
+                <div id="doc-list-overlay" class="absolute bottom-4 left-4 right-4 max-h-60 overflow-y-auto glass-panel rounded-lg p-3 opacity-90 z-20">
+                    <ul id="file-list" class="space-y-1 text-sm text-slate-400"><li class="italic text-slate-600 text-xs">Dosya yüklenmedi...</li></ul>
                 </div>
-                <div id="doc-list-overlay" class="absolute bottom-4 left-4 right-4 max-h-60 overflow-y-auto glass-panel rounded-lg p-3 opacity-90 transition-opacity duration-300 z-20">
-                    <h3 class="text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider flex justify-between items-center">
-                        İşlenen Dokümanlar <span id="memory-badge" class="text-[10px] bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded hidden">Hafızadan</span>
-                    </h3>
-                    <ul id="file-list" class="space-y-1 text-sm text-slate-400"><li class="italic text-slate-600 text-xs">Henüz dosya yüklenmedi...</li></ul>
-                </div>
-            </div>
-            <div class="h-12 bg-slate-800 border-t border-slate-700 flex items-center justify-around text-xs text-slate-400 px-4 z-10">
-                <div id="status-text">Sistem Hazır</div><div><span id="total-pages">Generated</span> by Sertaç GÜL</div>
             </div>
         </div>
 
-        <div class="w-1/2 flex flex-col bg-slate-950 relative">
+        <div class="w-full md:w-1/2 flex flex-col bg-slate-950 relative h-full">
             
-            <div id="flashcard-overlay" class="absolute inset-0 bg-slate-900/95 z-50 flex flex-col items-center justify-center p-8 hidden backdrop-blur-sm">
-                <button id="close-flashcards-btn" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
-                <h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 mb-2"><i class="fa-solid fa-layer-group mr-2"></i>Akıl Kartları</h2>
-                <h3 id="flashcard-topic-title" class="text-xs text-slate-400 font-normal mb-6">Konu: ...</h3>
-                
-                <div class="perspective-1000 w-full max-w-md h-64">
+            <div id="flashcard-overlay" class="absolute inset-0 bg-slate-900/95 z-50 flex flex-col items-center justify-center p-4 hidden backdrop-blur-sm">
+                <button id="close-flashcards-btn" class="absolute top-4 right-4 text-white p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
+                <div class="perspective-1000 w-full max-w-sm h-64">
                     <div id="flashcard-inner" class="flashcard-container relative w-full h-full bg-slate-800 rounded-xl shadow-2xl border border-slate-600" onclick="this.classList.toggle('flipped')">
-                        <div class="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-6 text-center bg-slate-800 rounded-xl border border-slate-600">
-                            <div>
-                                <p class="text-xs text-slate-500 uppercase tracking-widest mb-2">Soru</p>
-                                <h3 id="fc-front" class="text-xl font-bold text-white leading-relaxed">Yükleniyor...</h3>
-                                <p class="text-[10px] text-slate-500 mt-4">(Cevabı görmek için tıkla)</p>
-                            </div>
-                        </div>
-                        <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 text-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-cyan-500/50">
-                             <div>
-                                 <p class="text-xs text-cyan-400 uppercase tracking-widest mb-2">Cevap</p>
-                                 <p id="fc-back" class="text-md text-slate-200 leading-relaxed">...</p>
-                             </div>
-                        </div>
+                        <div class="absolute inset-0 w-full h-full backface-hidden flex items-center justify-center p-6 text-center bg-slate-800 rounded-xl"><div><p class="text-xs text-slate-500 mb-2">Soru</p><h3 id="fc-front" class="text-xl font-bold text-white">...</h3></div></div>
+                        <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 text-center bg-slate-900 rounded-xl border border-cyan-500"><div><p class="text-xs text-cyan-400 mb-2">Cevap</p><p id="fc-back" class="text-md text-slate-200 selectable">...</p></div></div>
                     </div>
                 </div>
-
-                <div class="flex gap-6 mt-8 items-center">
-                    <button id="prev-fc" class="bg-slate-700 hover:bg-slate-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition transform hover:scale-105"><i class="fa-solid fa-arrow-left text-lg"></i></button>
-                    <span id="fc-counter" class="text-slate-400 font-mono text-sm bg-slate-800 px-3 py-1 rounded border border-slate-700">1 / 5</span>
-                    <button id="next-fc" class="bg-slate-700 hover:bg-slate-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition transform hover:scale-105"><i class="fa-solid fa-arrow-right text-lg"></i></button>
+                <div class="flex gap-6 mt-8">
+                    <button id="prev-fc" class="bg-slate-700 text-white rounded-full w-12 h-12"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button id="next-fc" class="bg-slate-700 text-white rounded-full w-12 h-12"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
+            </div>
+
+            <div id="diagram-modal" onclick="if(event.target.id === 'diagram-modal') this.classList.add('hidden')" class="fixed inset-0 bg-slate-950/98 z-50 hidden overflow-auto cursor-pointer">
+                <div class="absolute top-4 right-4 text-slate-500 text-sm bg-slate-900 px-3 py-1 rounded border border-slate-700 pointer-events-none z-50">Kapatmak için tıkla</div>
+                <div id="diagram-container"><div id="mermaid-output" class="pointer-events-none"></div></div>
             </div>
 
             <div id="page-viewer-overlay" class="absolute inset-0 bg-slate-950 z-50 flex flex-col hidden">
-                <div class="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-900 shadow-md">
-                    <div class="flex items-center gap-4"><h3 id="viewer-title" class="text-lg font-bold text-slate-200">Belge Görüntüleyici</h3><span class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded border border-yellow-500/30"><i class="fa-solid fa-highlighter mr-1"></i>Vurgular Açık</span></div>
-                    <button id="close-viewer-btn" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
-                </div>
-                <div class="flex-1 overflow-auto p-8 flex justify-center bg-slate-950 relative cursor-pointer" id="viewer-body">
-                    <div class="relative shadow-2xl transition-transform hover:scale-[1.01]">
-                        <canvas id="page-viewer-canvas" class="cursor-pointer"></canvas>
-                        <div id="simple-viewer-content" class="hidden bg-white p-10 text-slate-900 max-w-3xl mx-auto min-h-[500px] shadow-lg text-sm leading-7"></div>
-                    </div>
-                    <div id="viewer-error" class="hidden text-slate-400 text-sm text-center self-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 text-3xl mb-4 block"></i><p class="text-lg">Görüntüleme Hatası.</p></div>
-                </div>
+                <div class="flex justify-between p-4 bg-slate-900 border-b border-slate-700"><h3 class="text-white font-bold">Görüntüleyici</h3><button id="close-viewer-btn" class="text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+                <div class="flex-1 overflow-auto p-4 flex justify-center bg-slate-900" id="viewer-body"><div class="relative shadow-2xl"><canvas id="page-viewer-canvas"></canvas><div id="simple-viewer-content" class="hidden text-slate-300 p-4 font-mono text-xs whitespace-pre-wrap selectable"></div></div></div>
             </div>
 
-            <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
-                <div class="flex gap-4">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex-shrink-0 flex items-center justify-center"><i class="fa-solid fa-robot text-white text-xs"></i></div>
-                    <div class="glass-panel p-4 rounded-r-xl rounded-bl-xl max-w-[90%]">
-                        <p class="text-slate-300">Merhaba! Ben DEHA v17.8.</p>
-                        <p class="text-slate-400 text-sm mt-1">Diyagram hataları giderildi. Ekrana tıklayarak kapatabilirsin.</p>
-                    </div>
-                </div>
+            <div id="ocr-modal" class="absolute inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center"><div class="bg-slate-800 p-6 rounded-xl border border-slate-600 shadow-2xl"><h3 class="text-indigo-400 font-bold mb-2">OCR İşleniyor...</h3><div class="w-64 bg-slate-700 h-2 rounded-full"><div id="ocr-progress" class="bg-indigo-500 h-2 rounded-full" style="width:0%"></div></div></div></div>
+
+            <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+                <div class="flex gap-4"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex-shrink-0 flex items-center justify-center"><i class="fa-solid fa-robot text-white text-xs"></i></div><div class="glass-panel p-4 rounded-r-xl rounded-bl-xl text-slate-300 text-sm">Merhaba! DEHA v17.9 iOS Hazır. <br>App olarak kullanmak için "Ana Ekrana Ekle" diyebilirsin.</div></div>
             </div>
 
-            <div class="p-4 bg-slate-900 border-t border-slate-700">
-                <div class="flex flex-col gap-1 mb-2">
-                    <div class="grid grid-cols-3 gap-2">
-                         <button id="start-quiz-btn" class="bg-yellow-600 hover:bg-yellow-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-clipboard-question"></i> Quiz</button>
-                        <button id="prepare-cards-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-layer-group"></i> Kartlar</button>
-                        <button id="concepts-btn" class="bg-pink-600 hover:bg-pink-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-tags"></i> Kavram</button>
-                        
-                        <button id="podcast-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-microphone-lines"></i> Podcast</button>
-                        <button id="critique-btn" class="bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-magnifying-glass-chart"></i> Analiz</button>
-                        <button id="diagram-btn" class="bg-orange-600 hover:bg-orange-500 text-white text-xs py-2 rounded shadow-md transition flex items-center justify-center gap-2 font-semibold"><i class="fa-solid fa-sitemap"></i> Diyagram</button>
-                        
-                        <button id="suggest-btn" class="col-span-3 bg-slate-700 hover:bg-slate-600 text-white text-xs py-1 rounded shadow-md transition flex items-center justify-center gap-2"><i class="fa-regular fa-lightbulb"></i> Soru Öner</button>
-                    </div>
-                    <div class="flex gap-2 h-6 mt-1">
-                        <div class="flex-1 text-center"><button id="btn-saved-quiz" class="hidden text-[10px] text-yellow-400 hover:text-yellow-200 border border-yellow-600/30 rounded px-2 py-0.5 w-full">Kayıtlı Quiz</button></div>
-                         <div class="flex-1 text-center"><button id="btn-saved-cards" class="hidden text-[10px] text-cyan-400 hover:text-cyan-200 border border-cyan-600/30 rounded px-2 py-0.5 w-full">Kayıtlı Kartlar</button></div>
-                    </div>
-                </div>
-                <div class="flex gap-2 mb-2 justify-between items-center">
-                    <div class="text-xs text-slate-500 italic flex-1 flex items-center gap-2">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" id="ai-mode-toggle" class="sr-only peer">
-                          <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
-                          <span class="ml-2 text-xs font-bold text-indigo-400">AI Sohbet</span>
-                        </label>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="explain-selection-btn" class="bg-slate-800 hover:bg-purple-600 border border-slate-700 text-xs text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-2 cursor-pointer" title="Seçili Metni Açıkla (AI)"><i class="fa-solid fa-question"></i> Açıklat</button>
-                        <button id="read-selection-btn" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 px-3 py-2 rounded-lg transition flex items-center gap-2 cursor-pointer" title="Seçili Metni Oku"><i class="fa-solid fa-ear-listen"></i> Seçtiğin Metni Sesli Okut</button>
-                    </div>
+            <div class="p-3 bg-slate-900 border-t border-slate-700 flex-shrink-0 safe-area-pb">
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <button id="start-quiz-btn" class="bg-yellow-600 hover:bg-yellow-500 text-white text-[10px] py-2 rounded font-bold flex flex-col items-center transition shadow-md"><i class="fa-solid fa-clipboard-question mb-1 text-sm"></i>Quiz</button>
+                    <button id="prepare-cards-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] py-2 rounded font-bold flex flex-col items-center transition shadow-md"><i class="fa-solid fa-layer-group mb-1 text-sm"></i>Kart</button>
+                    <button id="diagram-btn" class="bg-orange-600 hover:bg-orange-500 text-white text-[10px] py-2 rounded font-bold flex flex-col items-center transition shadow-md"><i class="fa-solid fa-sitemap mb-1 text-sm"></i>Şema</button>
+                    <button id="podcast-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] py-2 rounded font-bold flex flex-col items-center transition shadow-md"><i class="fa-solid fa-microphone-lines mb-1 text-sm"></i>Pod</button>
                 </div>
                 <div class="relative flex gap-2">
-                    <div class="relative flex-1 flex items-center"><input type="text" id="user-input" placeholder="Dokümanlarda ara..." class="w-full bg-slate-800 text-white rounded-lg pl-4 pr-4 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-700 placeholder-slate-500 shadow-inner transition-all h-full"></div>
-                    <button id="send-btn" class="bg-indigo-700 hover:bg-indigo-600 text-white rounded-lg px-6 transition border border-indigo-600 font-semibold shadow-lg shadow-indigo-900/50 flex items-center gap-2"><i class="fa-solid fa-search"></i> <span class="hidden sm:inline">Araştır</span></button>
+                    <input type="text" id="user-input" placeholder="Dokümanlarda ara veya sor..." class="w-full bg-slate-800 text-white rounded-lg pl-4 pr-4 py-3 border border-slate-600 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all shadow-inner">
+                    <button id="send-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 transition shadow-lg shadow-indigo-500/30"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+                <div class="hidden">
+                    <button id="concepts-btn"></button><button id="critique-btn"></button><button id="suggest-btn"></button>
+                    <button id="explain-selection-btn"></button><button id="read-selection-btn"></button>
+                    <button id="btn-saved-quiz"></button><button id="btn-saved-cards"></button>
+                    <input type="checkbox" id="ai-mode-toggle" checked>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="diagram-modal" onclick="this.classList.add('hidden')" class="fixed inset-0 bg-slate-950/98 z-50 hidden overflow-auto cursor-pointer">
-        <div class="absolute top-4 right-4 text-slate-500 text-sm bg-slate-900 px-3 py-1 rounded border border-slate-700 pointer-events-none z-50">
-            <i class="fa-solid fa-hand-pointer mr-2"></i>Kapatmak için tıklayın
-        </div>
-        <div id="diagram-container">
-            <div id="mermaid-output" class="pointer-events-none"></div>
-        </div>
-    </div>
-
-    <div id="ocr-modal" class="absolute inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-slate-800 border border-slate-600 rounded-xl p-6 w-96 shadow-2xl">
-            <h3 class="text-indigo-400 font-bold text-lg mb-2">Akıllı Tarama (OCR)</h3>
-            <p class="text-slate-300 text-sm mb-4">İçerik analiz ediliyor...</p>
-            <div class="w-full bg-slate-700 rounded-full h-2.5 mb-2"><div id="ocr-progress" class="bg-indigo-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div></div>
-            <div class="flex justify-between text-xs text-slate-400"><span id="ocr-status-detail">Başlatılıyor...</span><span id="ocr-percent">0%</span></div>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        mermaid.initialize({ startOnLoad: false, theme: 'base', securityLevel: 'loose', flowchart: { useMaxWidth: false, htmlLabels: true }, themeVariables: { fontSize: '32px', fontFamily: 'Inter', nodeBorder: '3px', clusterBorders: '3px', lineColor: '#334155', mainBkg: '#ffffff', nodeBkg: '#ffffff' } });
         
-        // --- Mermaid Config ---
-        mermaid.initialize({ 
-            startOnLoad: false, 
-            theme: 'base', 
-            securityLevel: 'loose',
-            flowchart: { useMaxWidth: false, htmlLabels: true }, 
-            themeVariables: {
-                fontSize: '32px', 
-                fontFamily: 'Inter',
-                nodeBorder: '3px',
-                clusterBorders: '3px',
-                lineColor: '#334155',
-                mainBkg: '#ffffff',
-                nodeBkg: '#ffffff'
+        let appW=0,appH=0;
+        const state = { documents: [], nodes: [], quizHistory: [], flashcardHistory: [], chatHistory: [], viewer: {docId:null, pageNum:1}, aiMode: true };
+
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiIconBtn = document.querySelector('#save-api-key-btn');
+        const fileInput = document.getElementById('file-upload');
+        const userInput = document.getElementById('user-input');
+        const chatContainer = document.getElementById('chat-container');
+        
+        // --- API Key Toggle ---
+        saveApiIconBtn.onclick = () => {
+            apiKeyInput.classList.toggle('hidden');
+            if(!apiKeyInput.classList.contains('hidden')) apiKeyInput.focus();
+        };
+        apiKeyInput.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') {
+                if(apiKeyInput.value.trim()) { localStorage.setItem('deha_api_key', apiKeyInput.value.trim()); apiKeyInput.classList.add('hidden'); alert("Anahtar Kaydedildi"); }
             }
         });
 
-        // --- Globals ---
-        let currentSpeakingIndex = -1;
-        let appW = 0, appH = 0;
-        const state = {
-            documents: [], nodes: [], isProcessing: false,
-            quizHistory: [], currentQuizIndex: -1,
-            flashcardHistory: [], currentFlashcardSetIndex: -1, currentCardIndex: 0,
-            lastFlashcardDoc: null, currentTopic: "", currentQuizTopic: "", lastQuizDoc: null,
-            chatHistory: [], currentQuiz: null, currentSearchResults: [], lastQuery: "",
-            viewer: { docId: null, pageNum: 1, scale: 1.5 }, renderTask: null,
-            lastSummary: "", lastSummaryDocName: "",
-            aiMode: false
-        };
-
-        // --- DOM Elements ---
-        const apiKeyInput = document.getElementById('api-key-input');
-        const saveApiKeyBtn = document.getElementById('save-api-key-btn');
-        const fileInput = document.getElementById('file-upload');
-        const fileList = document.getElementById('file-list');
-        const fileCount = document.getElementById('file-count');
-        const userInput = document.getElementById('user-input');
-        const statusText = document.getElementById('status-text');
-        const canvas = document.getElementById('knowledge-graph');
-        const ctx = canvas.getContext('2d');
-        const historySidebar = document.getElementById('history-sidebar');
-        const ocrModal = document.getElementById('ocr-modal');
-        const ocrProgress = document.getElementById('ocr-progress');
-        const ocrPercent = document.getElementById('ocr-percent');
-        const ocrStatusDetail = document.getElementById('ocr-status-detail');
-        const flashcardOverlay = document.getElementById('flashcard-overlay');
-        const clearDataBtn = document.getElementById('clear-data-btn');
-        const aiModeToggle = document.getElementById('ai-mode-toggle');
-        
-        // --- Helper Functions ---
-        function safeStr(str) { return str ? str.replace(/"/g, '&quot;') : ''; }
-        function normalizeTextForPDF(text) { return text.replace(/[ğĞüÜşŞıİöÖçÇâÂîÎ]/g, (m)=>({'ğ':'g','Ğ':'G','ü':'u','Ü':'U','ş':'s','Ş':'S','ı':'i','İ':'I','ö':'o','Ö':'O','ç':'c','Ç':'C','â':'a','Â':'A','î':'i','Î':'I'}[m])).replace(/[^\x00-\x7F]/g, ""); }
-        function latinizeFilename(text) { return normalizeTextForPDF(text.split(/\s+/).slice(0, 3).join(' ')).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50); }
-        function addMessage(content, sender, isHtml = false) {
-            const container = document.getElementById('chat-container');
+        // --- Simplified JS Functions ---
+        function addMessage(msg, sender, isHtml=false) {
             const div = document.createElement('div');
-            div.className = `flex gap-4 ${sender === 'user' ? 'flex-row-reverse' : ''} animate-fade-in`;
-            const icon = sender === 'user' ? '<div class="w-8 h-8 rounded-full bg-slate-700 flex-shrink-0 flex items-center justify-center border border-slate-600"><i class="fa-solid fa-user text-slate-300 text-xs"></i></div>' : '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-lg shadow-indigo-900/30"><i class="fa-solid fa-robot text-white text-xs"></i></div>';
-            div.innerHTML = `${icon}<div class="${sender==='user'?'bg-slate-800 border-slate-700 rounded-l-xl rounded-br-xl':'glass-panel border-indigo-500/20 rounded-r-xl rounded-bl-xl'} p-4 border max-w-[90%] shadow-sm text-sm text-slate-300">${isHtml ? content : `<p>${content}</p>`}</div>`;
-            container.appendChild(div); container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-            if (sender === 'user') state.lastQuestion = content;
-            else if (sender === 'bot' && state.lastQuestion) { addToHistory(state.lastQuestion, content); state.lastQuestion = null; }
+            div.className = `flex gap-4 ${sender==='user'?'flex-row-reverse':''} animate-fade-in`;
+            div.innerHTML = `<div class="${sender==='user'?'bg-slate-800 rounded-l-xl rounded-br-xl':'glass-panel rounded-r-xl rounded-bl-xl'} p-3 border border-slate-700 max-w-[85%] text-sm text-slate-300 shadow-sm">${isHtml?msg:`<p>${msg}</p>`}</div>`;
+            chatContainer.appendChild(div); chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        function addToHistory(q, a) { state.chatHistory.push({ q, a, date: Date.now() }); renderHistorySidebar(); saveState(); }
-        function renderHistorySidebar() {
-             const list = document.getElementById('history-list'); list.innerHTML = '';
-             if(state.chatHistory.length === 0) { list.innerHTML = '<p class="text-xs text-slate-600 text-center mt-4">Henüz geçmiş yok.</p>'; return; }
-             state.chatHistory.slice().reverse().forEach(h => {
-                 const d = document.createElement('div'); d.className = 'bg-slate-800/50 p-2 rounded border border-slate-700 cursor-pointer hover:bg-slate-800 mb-2';
-                 d.innerHTML = `<div class="text-xs font-bold text-indigo-300 truncate">${h.q}</div><div class="text-[10px] text-slate-500 truncate">${new Date(h.date).toLocaleTimeString()}</div>`;
-                 d.onclick = () => { addMessage(h.q, 'user'); addMessage(h.a, 'bot', true); }; list.appendChild(d);
-             });
+        function addLoader(txt) {
+            const id='l-'+Date.now(); const div=document.createElement('div'); div.id=id; div.className='flex gap-4';
+            div.innerHTML=`<div class="glass-panel p-3 rounded-xl flex items-center gap-2 border border-slate-700"><div class="loader"></div><span class="text-xs text-indigo-300 animate-pulse">${txt}</span></div>`;
+            chatContainer.appendChild(div); chatContainer.scrollTop=chatContainer.scrollHeight; return id;
         }
-        function addLoader(text) {
-            const container = document.getElementById('chat-container');
-            const id = 'loader-' + Date.now();
-            const div = document.createElement('div'); div.id = id; div.className = `flex gap-4`;
-            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex-shrink-0 flex items-center justify-center"><i class="fa-solid fa-robot text-white text-xs"></i></div><div class="glass-panel rounded-r-xl rounded-bl-xl p-4 flex items-center gap-3 border border-indigo-500/20"><div class="loader"></div><span class="text-xs text-indigo-300 animate-pulse">${text}</span></div>`;
-            container.appendChild(div); container.scrollTop = container.scrollHeight; return id;
+        function removeLoader(id){ const el=document.getElementById(id); if(el) el.remove(); }
+
+        async function callGemini(prompt) {
+            const key = localStorage.getItem('deha_api_key');
+            if(!key) { addMessage("Lütfen önce API Anahtarı girin (Anahtar simgesi).", 'bot'); return null; }
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                const data = await response.json(); return data.candidates[0].content.parts[0].text;
+            } catch(e) { console.error(e); addMessage("API Hatası. Anahtarınızı kontrol edin.", 'bot'); return null; }
         }
-        function removeLoader(id) { const el = document.getElementById(id); if(el) el.remove(); }
-        function readSelection() { const s = window.getSelection().toString().trim(); if(s) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(s); u.lang = 'tr-TR'; window.speechSynthesis.speak(u); } }
-        
-        // --- Core Features ---
-        
-        // Gelişmiş Kod Temizleyici (Liste numaralarını siler)
+
         function sanitizeMermaidCode(code) {
             let clean = code.replace(/```mermaid/g, '').replace(/```/g, '').trim();
-            // 1. Satır başındaki "1. ", "2. ", "- ", "* " gibi karakterleri sil
-            clean = clean.replace(/^[\d]+\.\s*/gm, ''); // Numaraları sil
-            clean = clean.replace(/^[\-\*]\s*/gm, ''); // Markdown listeleri sil
-            // 2. Parantez içeren ama tırnak içinde olmayan etiketleri onar
-            clean = clean.replace(/\[([^"\]]*?[\(\)][^"\]]*?)\]/g, '["$1"]');
+            clean = clean.replace(/^[\d]+\.\s*/gm, '').replace(/^[\-\*]\s*/gm, '').replace(/\[([^"\]]*?[\(\)][^"\]]*?)\]/g, '["$1"]');
             return clean;
         }
 
+        // --- Core Logic ---
         window.generateDiagram = async (id) => {
-            const doc = state.documents.find(d => d.id === id); if(!doc) return;
-            
+            const doc = state.documents.find(d=>d.id===id); if(!doc) return;
             document.getElementById('diagram-modal').classList.remove('hidden');
-            const outputDiv = document.getElementById('mermaid-output');
-            outputDiv.innerHTML = '<div class="text-white-300 font-bold text-2xl animate-pulse p-40">Diyagram Oluşturuluyor...</div>';
-            
-            const prompt = `Analyze this text and create a comprehensive Mermaid.js diagram. 
-            Rules: 
-            1. Use 'graph LR' (Left-to-Right).
-            2. Node IDs: Use ONLY alphanumeric characters (A1, Node2). NO spaces, NO symbols in IDs.
-            3. Labels: Wrap ALL labels in double quotes. Example: A1["This is a label"].
-            4. Do NOT use cylinder shapes [()] or parentheses in shape definitions. Use simple rects [].
-            5. Do NOT format as a numbered list. Start directly with the graph definition.
-            6. Output ONLY the code.
-            Text: ${doc.fullText.substring(0, 10000)}`;
-
-            const response = await callGemini(prompt);
-            
-            if(response) {
+            const output = document.getElementById('mermaid-output'); output.innerHTML='<div class="text-orange-500 animate-pulse text-center mt-20 font-bold text-lg">Diyagram Hesaplanıyor...</div>';
+            const res = await callGemini(`Create a comprehensive Mermaid.js diagram. Use 'graph LR'. Node IDs must be alphanumeric ONLY. Wrap ALL labels in double quotes. No cylinder shapes. Output ONLY code. Text: ${doc.fullText.substring(0,10000)}`);
+            if(res) {
                 try {
-                    // SANITIZE 2.0 (Numaraları temizle)
-                    let cleanCode = sanitizeMermaidCode(response);
-                    
-                    const uniqueId = 'diagram-' + Date.now();
-                    outputDiv.innerHTML = `<pre class="mermaid" id="${uniqueId}">${cleanCode}</pre>`;
-                    await mermaid.run({ nodes: [document.getElementById(uniqueId)] });
-                    
-                } catch(e) { 
-                    console.error(e); 
-                    outputDiv.innerHTML = `<div class="text-red-500 text-center p-10 font-bold">Diyagram Hatası:<br>${e.message}<br><br>Ekrana tıklayarak kapatıp tekrar deneyin.</div>`; 
-                }
-            } else { 
-                outputDiv.innerHTML = "Bağlantı hatası."; 
-            }
+                    const clean = sanitizeMermaidCode(res); const uid='d-'+Date.now();
+                    output.innerHTML=`<pre class="mermaid" id="${uid}">${clean}</pre>`;
+                    await mermaid.run({nodes:[document.getElementById(uid)]});
+                } catch(e) { output.innerHTML="Hata: "+e.message; }
+            } else { output.innerHTML="Bağlantı hatası"; }
         };
 
         window.generatePodcast = async (id) => {
-            const doc = state.documents.find(d => d.id === id); if(!doc) return;
-            const l = addLoader("Podcast senaryosu yazılıyor...");
+            const doc = state.documents.find(d=>d.id===id); if(!doc) return;
+            const l = addLoader("Podcast senaryosu...");
             const res = await callGemini(`Convert key info to podcast script. Labels: 'Sunucu:' and 'Uzman:'. **Output in same language as text.** Text: ${doc.fullText.substring(0,10000)}`);
             removeLoader(l);
             if(res) {
-                let html = `<div class="bg-slate-800/80 p-3 rounded border border-indigo-500/30 mt-2"><div class="flex justify-between items-center mb-2"><div class="text-indigo-300 text-xs font-bold">🎙️ Podcast Senaryosu</div></div><div class="text-xs text-slate-300 leading-relaxed space-y-2 whitespace-pre-line">${res.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-100">$1</strong>')}</div><div class="mt-2 text-right"><button onclick="window.playPodcast(this.parentElement.previousElementSibling.innerText)" class="text-[10px] bg-indigo-500 hover:bg-indigo-400 text-white px-3 py-1.5 rounded flex items-center gap-1 inline-flex shadow-lg shadow-indigo-500/30"><i class="fa-solid fa-play"></i> Seslendir</button></div></div>`;
+                let html = `<div class="bg-slate-800/80 p-3 rounded border border-indigo-500/30 mt-2"><div class="flex justify-between items-center mb-2"><div class="text-indigo-300 text-xs font-bold">🎙️ Podcast</div></div><div class="text-xs text-slate-300 leading-relaxed space-y-2 whitespace-pre-line">${res.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-100">$1</strong>')}</div><div class="mt-2 text-right"><button onclick="window.playPodcast(this.parentElement.previousElementSibling.innerText)" class="text-[10px] bg-indigo-500 text-white px-3 py-1.5 rounded flex items-center gap-1 inline-flex"><i class="fa-solid fa-play"></i> Seslendir</button></div></div>`;
                 addMessage(html, 'bot', true);
             }
-        }
+        };
 
         window.playPodcast = function(scriptText) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const lines = scriptText.split('\n').filter(line => line.trim() !== '');
                 const voices = window.speechSynthesis.getVoices();
+                // Türkçe sesi zorlamaya çalışalım
                 const trVoices = voices.filter(v => v.lang.includes('tr'));
                 const hostVoice = trVoices[0] || voices[0];
                 const expertVoice = trVoices[1] || trVoices[0] || voices[0];
-                let queue = [];
                 lines.forEach(line => {
-                    let utterance = new SpeechSynthesisUtterance();
-                    utterance.lang = 'tr-TR';
-                    if (line.toLowerCase().includes('sunucu') || line.toLowerCase().includes('host')) { utterance.voice = hostVoice; utterance.pitch = 1.1; utterance.rate = 1.1; utterance.text = line.replace(/^(Sunucu|Host)(\s*:\s*)/i, ''); } 
-                    else if (line.toLowerCase().includes('uzman') || line.toLowerCase().includes('expert')) { utterance.voice = expertVoice; utterance.pitch = 0.9; utterance.rate = 0.95; utterance.text = line.replace(/^(Uzman|Expert)(\s*:\s*)/i, ''); } 
-                    else { utterance.text = line; }
-                    if(utterance.text.trim().length > 1) queue.push(utterance);
+                    let u = new SpeechSynthesisUtterance(); u.lang = 'tr-TR';
+                    if (line.toLowerCase().includes('sunucu') || line.toLowerCase().includes('host')) { u.voice = hostVoice; u.pitch = 1.1; u.text = line.replace(/^(Sunucu|Host)(\s*:\s*)/i, ''); } 
+                    else if (line.toLowerCase().includes('uzman') || line.toLowerCase().includes('expert')) { u.voice = expertVoice; u.pitch = 0.9; u.text = line.replace(/^(Uzman|Expert)(\s*:\s*)/i, ''); } 
+                    else { u.text = line; }
+                    if(u.text.trim().length > 1) window.speechSynthesis.speak(u);
                 });
-                queue.forEach(u => window.speechSynthesis.speak(u));
-                addMessage('<div class="text-xs text-green-400"><i class="fa-solid fa-volume-high"></i> Podcast oynatılıyor...</div>', 'bot', true);
-            } else { alert("Tarayıcınız ses sentezlemeyi desteklemiyor."); }
+            } else { alert("Ses desteklenmiyor."); }
         };
 
-        window.extractConcepts = async (id) => {
-            const doc = state.documents.find(d=>d.id===id); if(!doc) return;
-            const l = addLoader("Kavramlar çıkarılıyor...");
-            const res = await callGemini(`Extract 10 key concepts JSON array. Keys: term, definition. **Output in same language as text.** Text: ${doc.fullText.substring(0,8000)}`);
-            removeLoader(l);
-            if(res) {
-                try {
-                    const concepts = JSON.parse(res.replace(/```json|```/g,'').trim());
-                    let html = `<div class="bg-slate-800/80 p-3 rounded border border-pink-500/30 mt-2"><div class="text-pink-300 text-xs font-bold mb-2">🔑 Anahtar Kavramlar</div><div class="space-y-2">`;
-                    concepts.forEach(c => { html += `<div class="text-xs"><span class="font-bold text-pink-200">${c.term}:</span> <span class="text-slate-300">${c.definition}</span></div>`; });
-                    html += `</div></div>`; addMessage(html, 'bot', true);
-                } catch(e) { console.error(e); addMessage("Kavramlar çıkarılamadı.", 'bot'); }
-            }
-        }
-
-        window.analyzeCritique = async (id) => {
-            const doc = state.documents.find(d=>d.id===id); if(!doc) return;
-            const l = addLoader("Eleştirel analiz yapılıyor...");
-            const res = await callGemini(`Perform critical analysis. Bullet points. **Output in same language as text.** Text: ${doc.fullText.substring(0,10000)}`);
-            removeLoader(l);
-            if(res) {
-                let html = `<div class="bg-slate-800/80 p-3 rounded border border-rose-500/30 mt-2"><div class="text-rose-300 text-xs font-bold mb-2">🧐 Eleştirel Analiz</div><div class="text-xs text-slate-300 leading-relaxed space-y-1">${res.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g, '<strong class="text-rose-100">$1</strong>')}</div></div>`;
-                addMessage(html, 'bot', true);
-            }
-        }
-
-        function showDocSelector(callbackName, title, colorClass) {
-            if(state.documents.length===0) return addMessage("Lütfen önce dosya yükleyin.",'bot');
-            if(state.documents.length===1) { window[callbackName](state.documents[0].id); return; }
-            let html = `<div class="bg-slate-800/80 p-3 rounded-lg border border-${colorClass}-500/30 mt-2"><div class="text-${colorClass}-300 text-xs font-bold mb-2 uppercase">${title}</div><div class="grid grid-cols-1 gap-2">`;
-            state.documents.forEach(doc => { html += `<button onclick="window.${callbackName}('${doc.id}')" class="text-left text-xs text-slate-300 hover:text-white bg-slate-700 hover:bg-${colorClass}-600/30 border border-slate-600 hover:border-${colorClass}-500 p-2 rounded transition flex items-center gap-2"><i class="fa-regular fa-file"></i> ${safeStr(doc.name)}</button>`; });
-            html += `</div></div>`; addMessage(html, 'bot', true);
-        }
-        
-        async function callGemini(prompt, outputJson = false) {
-            const userKey = apiKeyInput.value.trim();
-            if (!userKey) { addMessage("⚠️ API Anahtarı Gerekli.", 'bot', true); apiKeyInput.classList.add('ring-2', 'ring-red-500'); return null; }
-            try {
-                const schema = outputJson ? { responseMimeType: "application/json" } : {};
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: schema }) });
-                if (!response.ok) throw new Error(`API Error: ${response.status}`);
-                const data = await response.json(); return data.candidates[0].content.parts[0].text;
-            } catch (error) { console.error("Gemini Error:", error); return null; }
-        }
-
-        function saveState() {
-            try {
-                const docsToSave = state.documents.map(d => ({ id: d.id, name: d.name, type: d.type, fullText: d.fullText.substring(0, 500000), pages: d.pages.map(p => ({ number: p.number, text: p.text.substring(0, 10000) })), ocrDone: d.ocrDone }));
-                localStorage.setItem('deha_documents_v2', JSON.stringify(docsToSave));
-                localStorage.setItem('deha_history', JSON.stringify(state.chatHistory));
-                localStorage.setItem('deha_quiz_history', JSON.stringify(state.quizHistory));
-                localStorage.setItem('deha_flashcard_history', JSON.stringify(state.flashcardHistory));
-                updateSavedButtons();
-            } catch (e) { console.error("Storage error:", e); }
-        }
-        function updateSavedButtons() {
-            if (state.quizHistory.length > 0) document.getElementById('btn-saved-quiz').classList.remove('hidden');
-            if (state.flashcardHistory.length > 0) document.getElementById('btn-saved-cards').classList.remove('hidden');
-        }
-        function resizeCanvas() { const p = canvas.parentElement; if(p) { appW = p.clientWidth; appH = p.clientHeight; canvas.width = appW; canvas.height = appH; } }
-        
-        // --- Quiz & Flashcard Logic (SAYFA SAYISINA GÖRE HESAPLAMA EKLENDİ) ---
-        function startQuiz() { if(state.documents.length===0) return addMessage("Dosya yok.",'bot'); analyzeQuizTopics(state.documents[0].id); }
-        async function analyzeQuizTopics(id) { 
-             const doc = state.documents.find(d=>d.id===id); if(!doc) return; state.lastQuizDoc=doc;
-             const l = addLoader("Quiz konusu...");
-             const res = await callGemini(`Analyze text and identify 4-5 main study topics JSON array. **Output in same language as text.** Text: ${doc.fullText.substring(0,5000)}`);
-             removeLoader(l);
-             if(res) { try { const topics = JSON.parse(res.replace(/```json|```/g,'').trim()); let html = `<div class="bg-slate-800/80 p-3 rounded border border-yellow-500/30 mt-2"><div class="text-yellow-300 text-xs font-bold mb-2">Quiz Konusu Seç</div><div class="grid gap-2">`; topics.forEach(t => html+=`<button onclick="window.generateQuiz('${encodeURIComponent(t)}')" class="text-left text-xs text-slate-300 hover:text-white bg-slate-700 p-2 rounded">${t}</button>`); addMessage(html+'</div></div>', 'bot', true); } catch(e){} }
-        }
+        // Quiz Logic
         window.generateQuiz = async (t) => {
-            const topic = decodeURIComponent(t); 
-            // SAYFA SAYISINA GÖRE SORU HESAPLAMA (En az sayfa başı 2)
-            const pageCount = state.lastQuizDoc.pages ? state.lastQuizDoc.pages.length : 1;
-            const questionCount = Math.max(5, pageCount * 2); 
-            
-            const l = addLoader(`${questionCount} adet soru hazırlanıyor...`);
-            const res = await callGemini(`Create ${questionCount} multiple choice questions about "${topic}" based on text. **Questions/Options must be in same language as text.** JSON format: [{"question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0}]. Text: ${state.lastQuizDoc.fullText.substring(0,50000)}`);
+            const doc = state.lastQuizDoc; if(!doc) return;
+            const qCount = Math.max(5, (doc.pages ? doc.pages.length : 1) * 2);
+            const l = addLoader(`${qCount} soru hazırlanıyor...`);
+            const res = await callGemini(`Create ${qCount} multiple choice questions about "${t}" based on text. **Questions in same language as text.** JSON format: [{"question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0}]. Text: ${doc.fullText.substring(0,50000)}`);
             removeLoader(l);
             if(res) {
                 try {
-                    const jsonMatch = res.match(/\[[\s\S]*\]/); const jsonString = jsonMatch ? jsonMatch[0] : res; const questions = JSON.parse(jsonString);
-                    questions.forEach(q => { state.quizHistory.push({ data: q, docName: state.lastQuizDoc.name, date: Date.now(), topic: topic }); });
-                    state.currentQuizIndex = state.quizHistory.length - questions.length; state.currentQuiz = state.quizHistory[state.currentQuizIndex].data;
-                    saveState(); window.displayQuiz(state.currentQuizIndex); addMessage(`<strong>${questions.length}</strong> soru eklendi.`, 'bot', true);
-                } catch(e) { console.error("Quiz gen error", e); addMessage("Soru formatı anlaşılamadı.", 'bot'); }
+                    const match = res.match(/\[[\s\S]*\]/); 
+                    if(match) {
+                        const questions = JSON.parse(match[0]);
+                        questions.forEach(q => { state.quizHistory.push({ data: q, topic: t }); });
+                        state.currentQuizIndex = state.quizHistory.length - questions.length;
+                        window.displayQuiz(state.currentQuizIndex);
+                    }
+                } catch(e) { addMessage("Soru format hatası.", 'bot'); }
             }
         };
+
         window.displayQuiz = function(index) {
-             const quizEntry = state.quizHistory[index]; if (!quizEntry) return; const q = quizEntry.data; 
-             const navHtml = state.quizHistory.length > 1 ? `<div class="flex gap-1 mt-2"><button onclick="window.changeQuizView(-1)" ${index === 0 ? 'disabled' : ''} class="text-[10px] bg-slate-700 hover:bg-slate-600 disabled:opacity-50 px-2 py-1 rounded"><i class="fa-solid fa-chevron-left"></i></button><span class="text-[10px] text-slate-400 px-1">${index+1}/${state.quizHistory.length}</span><button onclick="window.changeQuizView(1)" ${index === state.quizHistory.length - 1 ? 'disabled' : ''} class="text-[10px] bg-slate-700 hover:bg-slate-600 disabled:opacity-50 px-2 py-1 rounded"><i class="fa-solid fa-chevron-right"></i></button></div>` : '';
-             let html = `<div class="bg-slate-800 p-4 rounded border border-yellow-500/30 mt-2"><div class="flex justify-between items-center mb-3"><div class="flex flex-col"><span class="text-yellow-300 text-xs font-bold uppercase">Quiz: ${quizEntry.topic}</span>${navHtml}</div></div><p class="text-white font-semibold mb-4 text-sm">${q.question}</p><div class="space-y-2">`;
+             const entry = state.quizHistory[index]; if (!entry) return; const q = entry.data; 
+             const nav = state.quizHistory.length > 1 ? `<div class="flex gap-2"><button onclick="window.changeQuizView(-1)" class="bg-slate-700 px-2 rounded text-xs"><i class="fa-solid fa-chevron-left"></i></button><span class="text-xs text-slate-400">${index+1}/${state.quizHistory.length}</span><button onclick="window.changeQuizView(1)" class="bg-slate-700 px-2 rounded text-xs"><i class="fa-solid fa-chevron-right"></i></button></div>` : '';
+             let html = `<div class="bg-slate-800 p-4 rounded border border-yellow-500/30 mt-2"><div class="flex justify-between items-center mb-3"><span class="text-yellow-300 text-xs font-bold uppercase">Quiz: ${entry.topic}</span>${nav}</div><p class="text-white font-semibold mb-4 text-sm">${q.question}</p><div class="space-y-2">`;
              q.options.forEach((o,i) => html+=`<button onclick="window.checkAns(this, ${i==q.correctIndex})" data-is-correct="${i==q.correctIndex}" class="w-full text-left p-2 rounded border border-slate-600 text-xs mb-1 hover:bg-slate-700">${String.fromCharCode(65+i)}) ${o}</button>`);
              html+=`</div></div>`; addMessage(html, 'bot', true);
         };
         window.changeQuizView = function(delta) { const newIndex = state.currentQuizIndex + delta; if (newIndex >= 0 && newIndex < state.quizHistory.length) { state.currentQuizIndex = newIndex; window.displayQuiz(newIndex); } };
-        window.checkAns = (btn, isCor) => { const container = btn.parentElement; container.querySelectorAll('button').forEach(b => { b.disabled = true; if(b.getAttribute('data-is-correct') === 'true') { b.classList.remove('border-slate-600', 'hover:bg-slate-700'); b.classList.add('bg-emerald-900/50', 'border-emerald-500', 'text-emerald-200'); } }); if(!isCor) { btn.classList.remove('border-slate-600', 'hover:bg-slate-700'); btn.classList.add('bg-red-900/50', 'border-red-500', 'text-red-200'); } };
+        window.checkAns = (btn, isCor) => { const container = btn.parentElement; container.querySelectorAll('button').forEach(b => { b.disabled = true; if(b.getAttribute('data-is-correct') === 'true') { b.classList.add('bg-emerald-900/50', 'border-emerald-500', 'text-emerald-200'); } }); if(!isCor) { btn.classList.add('bg-red-900/50', 'border-red-500', 'text-red-200'); } };
 
-        function prepareFlashcards() { if(state.documents.length) analyzeFlashcardTopics(state.documents[0].id); else addMessage("Dosya yok.",'bot'); }
-        async function analyzeFlashcardTopics(id) { 
-            const doc = state.documents.find(d=>d.id===id); if(!doc) return; state.lastFlashcardDoc=doc;
-            const l = addLoader("Kart konusu...");
-            const res = await callGemini(`Analyze and return 4-5 study topics as JSON array. **Output in same language as text.** Text: ${doc.fullText.substring(0,5000)}`);
+        // Analyze helpers
+        async function analyzeTopics(id, type) {
+            const doc = state.documents.find(d=>d.id===id); if(!doc) return; 
+            if(type === 'quiz') state.lastQuizDoc = doc; else state.lastFlashcardDoc = doc;
+            const l = addLoader("Konular...");
+            const res = await callGemini(`Analyze text and identify 4-5 topics JSON array. **Output in same language as text.** Text: ${doc.fullText.substring(0,5000)}`);
             removeLoader(l);
-            if(res) { try { const topics = JSON.parse(res.replace(/```json|```/g,'').trim()); let html = `<div class="bg-slate-800/80 p-3 rounded border border-cyan-500/30 mt-2"><div class="text-cyan-300 text-xs font-bold mb-2">Kart Konusu</div><div class="grid gap-2">`; topics.forEach(t => html+=`<button onclick="window.generateFlashcards('${encodeURIComponent(t)}')" class="text-left text-xs text-slate-300 hover:text-white bg-slate-700 p-2 rounded">${t}</button>`); addMessage(html+'</div></div>', 'bot', true); } catch(e){} }
-        };
-        window.generateFlashcards = async (t) => {
-            const topic = decodeURIComponent(t); 
-            // SAYFA SAYISINA GÖRE KART HESAPLAMA (En az sayfa başı 2)
-            const pageCount = state.lastFlashcardDoc.pages ? state.lastFlashcardDoc.pages.length : 1;
-            const cardCount = Math.max(5, pageCount * 2);
-
-            const l = addLoader(`${cardCount} adet kart hazırlanıyor...`);
-            const res = await callGemini(`Create ${cardCount} flashcards about "${topic}" based **strictly** on text. JSON: [{"front":"Q","back":"A"}]. Text: ${state.lastFlashcardDoc.fullText.substring(0,50000)}`);
-            removeLoader(l);
-            if(res) { try { const cards = JSON.parse(res.replace(/```json|```/g,'').trim()); state.flashcardHistory.push({topic: topic, data: cards}); state.currentFlashcardSetIndex = state.flashcardHistory.length - 1; state.currentCardIndex = 0; saveState(); document.getElementById('flashcard-overlay').classList.remove('hidden'); updateCardUI(); } catch(e){} }
+            if(res) {
+                try {
+                    const topics = JSON.parse(res.replace(/```json|```/g,'').trim());
+                    let html = `<div class="bg-slate-800/80 p-3 rounded border border-slate-500/30 mt-2"><div class="text-slate-300 text-xs font-bold mb-2">Konu Seç</div><div class="grid gap-2">`;
+                    topics.forEach(t => html+=`<button onclick="window.${type === 'quiz' ? 'generateQuiz' : 'generateFlashcards'}('${encodeURIComponent(t)}')" class="text-left text-xs text-slate-300 hover:text-white bg-slate-700 p-2 rounded">${t}</button>`);
+                    addMessage(html+'</div></div>', 'bot', true);
+                } catch(e){}
+            }
         }
+
+        // Kart Logic
+        window.generateFlashcards = async (t) => {
+            const topic = decodeURIComponent(t);
+            const pageCount = state.lastFlashcardDoc.pages ? state.lastFlashcardDoc.pages.length : 1;
+            const cCount = Math.max(5, pageCount * 2);
+            const l = addLoader(`${cCount} kart hazırlanıyor...`);
+            const res = await callGemini(`Create ${cCount} flashcards about "${topic}" based strictly on text. JSON: [{"front":"Q","back":"A"}]. Text: ${state.lastFlashcardDoc.fullText.substring(0,50000)}`);
+            removeLoader(l);
+            if(res) { try { const cards = JSON.parse(res.replace(/```json|```/g,'').trim()); state.flashcardHistory.push({topic: topic, data: cards}); state.currentFlashcardSetIndex = state.flashcardHistory.length - 1; state.currentCardIndex = 0; document.getElementById('flashcard-overlay').classList.remove('hidden'); updateCardUI(); } catch(e){} }
+        };
         function updateCardUI() { 
-            const set = state.flashcardHistory[state.currentFlashcardSetIndex]; if (!set) return; state.flashcards = set.data; 
-            if (state.currentCardIndex >= state.flashcards.length) state.currentCardIndex = 0; 
-            const card = state.flashcards[state.currentCardIndex]; 
+            const set = state.flashcardHistory[state.currentFlashcardSetIndex]; if (!set) return; 
+            const card = set.data[state.currentCardIndex]; 
             document.getElementById('fc-front').textContent = card.front; document.getElementById('fc-back').textContent = card.back; 
-            document.getElementById('fc-counter').textContent = `${state.currentCardIndex + 1} / ${state.flashcards.length}`; 
+            document.getElementById('fc-counter').textContent = `${state.currentCardIndex + 1} / ${set.data.length}`; 
             document.getElementById('flashcard-inner').classList.remove('flipped'); document.getElementById('flashcard-topic-title').textContent = `Konu: ${set.topic}`;
         }
-        function suggestQuestions() { if(state.documents.length) getSuggestions(state.documents[0].id); }
-        async function getSuggestions(id) {
-            const doc = state.documents.find(d=>d.id===id);
-            const l = addLoader("Soru düşünülüyor...");
-            const res = await callGemini(`Suggest 3 deep questions based on this text. **Output in the same language as the text.** Text: ${doc.fullText.substring(0,2000)}`);
-            removeLoader(l);
-            if(res) addMessage(`<div class="text-sm italic text-slate-300">${res.replace(/\n/g,'<br>')}</div>`,'bot',true);
-        }
-        
-        // --- Search & Chat ---
-        aiModeToggle.addEventListener('change', (e) => {
-            state.aiMode = e.target.checked;
-            userInput.placeholder = state.aiMode ? "Yapay zekaya sor (Örn: Bu makaledeki sonuç nedir?)" : "Dokümanlarda ara...";
-            if(state.aiMode) { userInput.classList.remove('focus:border-indigo-500'); userInput.classList.add('focus:border-emerald-500', 'border-emerald-500/50'); } else { userInput.classList.remove('focus:border-emerald-500', 'border-emerald-500/50'); userInput.classList.add('focus:border-indigo-500'); }
-        });
-        async function handleSearch() {
-            const query = userInput.value.trim(); if (!query) return;
-            if (state.documents.length === 0) { addMessage("Lütfen önce dosya yükleyin.", 'bot'); return; }
-            addMessage(query, 'user'); userInput.value = '';
-            if (state.aiMode) {
-                const loaderId = addLoader("Cevap oluşturuluyor...");
-                let context = state.documents.map(d => `Doküman: ${d.name}\nİçerik: ${d.fullText.substring(0, 10000)}`).join("\n\n");
-                const prompt = `Sen DEHA adında bir eğitim asistanısın. Kullanıcının sorusunu dokümanlara dayanarak cevapla. Dil: Kullanıcının diliyle aynı. Dokümanda yoksa belirt.\n\n${context}\n\nSoru: ${query}`;
-                const response = await callGemini(prompt);
-                removeLoader(loaderId);
-                if(response) { let formatted = response.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-400">$1</strong>').replace(/\n/g, '<br>'); addMessage(formatted, 'bot', true); } else { addMessage("Cevap oluşturulamadı.", 'bot'); }
-            } else {
-                const loaderId = addLoader("Aranıyor...");
-                setTimeout(() => {
-                    const results = searchDocuments(query); state.currentSearchResults = results;
-                    removeLoader(loaderId); 
-                    if (results.length === 0) { addMessage("Arama karşılığı bulunmuyor.", 'bot'); } else { displayResults(results, query); updateCanvasRelevance(results); }
-                }, 500);
-            }
-        }
-        function searchDocuments(q) {
-            const kw = q.toLowerCase().split(' ').filter(w=>w.length>0); if (kw.length === 0) return [];
-            let results = [];
-            state.documents.forEach(doc => { doc.pages.forEach(p => { const txt = p.text.toLowerCase(); let score = 0; kw.forEach(k => { try { const regex = new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'); if (regex.test(txt)) score += 10; } catch (e) { if(txt.includes(k)) score += 1; } }); if (score > 0) { const idx = txt.indexOf(kw[0]); const start = Math.max(0, idx - 100); const end = Math.min(p.text.length, idx + 300); results.push({docId: doc.id, docName: doc.name, page: p.number, score: score, text: "..." + p.text.substring(start, end) + "..."}); } }); });
-            return results.sort((a,b)=>b.score-a.score);
-        }
-        function displayResults(res, q) {
-             let h = `<div class="space-y-2">`; const keywords = q.toLowerCase().trim().split(/\s+/).filter(w => w.length > 0);
-             res.forEach((r,i) => { let highlightedText = r.text; keywords.forEach(k => { try { const regex = new RegExp(`(\\b${k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b)`, 'gi'); highlightedText = highlightedText.replace(regex, '<span class="highlight-text">$1</span>'); } catch(e) { highlightedText = highlightedText.replace(new RegExp(k, 'gi'), '<span class="highlight-text">$&</span>'); } }); h+=`<div class="bg-slate-800/50 p-2 rounded border-l-4 border-indigo-500"><div class="flex justify-between"><span class="text-xs font-bold text-indigo-300">${r.docName} <span class="text-slate-500 ml-2">(Sayfa ${r.page})</span></span><button onclick="window.viewDocumentPage('${r.docId}', ${r.page})" class="text-[10px] text-yellow-400 bg-slate-900 px-2 py-0.5 rounded border border-yellow-500/30 hover:bg-yellow-500/20 transition">Görüntüle</button></div><p class="text-xs text-slate-400 mt-1">${highlightedText}</p></div>`; });
-             addMessage(h+'</div>', 'bot', true); state.lastQuery = q;
-        }
-        function updateCanvasRelevance(res) { state.nodes.forEach(n => n.relevance = 0); res.forEach(r => { const n = state.nodes.find(no => no.refId === r.docId); if(n) n.relevance = 1; }); }
-        
-        async function runLocalOCR(docId) {
-            const doc = state.documents.find(d => d.id === docId); if (!doc || doc.ocrDone) return;
-            ocrModal.classList.remove('hidden');
-            let ocrFullText = "";
-            try {
-                const worker = await Tesseract.createWorker('tur+eng');
-                if (doc.type === 'pdf' && doc.pdfDocProxy) {
-                    const pagesToScan = Math.min(doc.pdfDocProxy.numPages, 10);
-                    for (let i = 1; i <= pagesToScan; i++) {
-                        const percent = Math.round(((i-1) / pagesToScan) * 100); ocrProgress.style.width = `${percent}%`; ocrPercent.textContent = `${percent}%`; ocrStatusDetail.textContent = `Sayfa ${i}/${pagesToScan}`;
-                        const page = await doc.pdfDocProxy.getPage(i); const viewport = page.getViewport({ scale: 2.0 });
-                        const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-                        const ctx = canvas.getContext('2d'); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-                        const { data: { text } } = await worker.recognize(canvas);
-                        if (text && text.trim().length > 0) { doc.pages[i-1].text += " " + text; ocrFullText += text + " "; }
-                    }
-                } else if (doc.type === 'image' && doc.fileBlob) {
-                    ocrProgress.style.width = `50%`; ocrPercent.textContent = `50%`; ocrStatusDetail.textContent = "Görsel işleniyor...";
-                    const { data: { text } } = await worker.recognize(doc.fileBlob); ocrFullText = text; doc.pages[0].text = text;
-                }
-                await worker.terminate(); doc.fullText += " " + ocrFullText; doc.ocrDone = true; saveState(); renderFileList(); ocrModal.classList.add('hidden'); addMessage(`<strong>${doc.name}</strong> başarıyla tarandı.`, 'bot', true);
-            } catch (error) { console.error("OCR Error:", error); ocrModal.classList.add('hidden'); alert("OCR Hatası"); }
-        }
-        
-        // --- File Handling (FIXED) ---
-        fileInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files); if (files.length === 0) return;
-            statusText.textContent = "Dosyalar işleniyor...";
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i]; const fileId = `doc-${Date.now()}-${i}`; const ext = file.name.split('.').pop().toLowerCase();
-                let docData = { id: fileId, name: file.name, fullText: "", pages: [], ocrDone: false, fileBlob: file, type: 'doc' };
-                try {
-                    if (ext === 'pdf') {
-                        docData.type = 'pdf'; 
-                        const buffer = await file.arrayBuffer(); 
-                        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise; 
-                        docData.pdfDocProxy = pdf;
-                        for(let j=1; j<=Math.min(pdf.numPages, 20); j++){ const page = await pdf.getPage(j); const content = await page.getTextContent(); const txt = content.items.map(i=>i.str).join(' '); docData.fullText += txt + " "; docData.pages.push({number: j, text: txt}); }
-                    } else if (ext === 'docx' && typeof mammoth !== 'undefined') {
-                        docData.type = 'word'; const buffer = await file.arrayBuffer(); const res = await mammoth.extractRawText({ arrayBuffer: buffer }); docData.fullText = res.value; docData.pages = [{number: 1, text: res.value}];
-                    } else if (['txt', 'md', 'csv'].includes(ext)) {
-                        docData.type = 'text'; docData.fullText = await file.text(); docData.pages = [{number: 1, text: docData.fullText}];
-                    } else if (['jpg','png','jpeg'].includes(ext)) {
-                        docData.type = 'image'; docData.fullText = "[Görsel]"; docData.pages = [{number: 1, text: "", hasImage: true}];
-                    } else { docData.fullText = "Desteklenmeyen format."; }
-                    state.documents.push(docData); addNode(docData.name, docData.id, docData.type);
-                } catch (err) { 
-                    console.error("Yükleme Hatası:", err); 
-                    alert(`HATA: ${file.name} yüklenemedi.\n\nDetay: ${err.message}`);
-                    addMessage(`⚠️ Hata: ${file.name} okunamadı.`, 'bot'); 
-                }
-            }
-            saveState(); renderFileList(); statusText.textContent = "Hazır"; fileInput.value = '';
-        });
-
-        function renderFileList() {
-            fileList.innerHTML = ''; 
-            state.documents.forEach(doc => {
-                const li = document.createElement('li'); li.className = "flex justify-between items-center bg-slate-800/50 p-2 rounded border border-slate-700 mb-1";
-                li.innerHTML = `<div class="flex items-center gap-2 overflow-hidden w-2/3"><i class="fa-regular fa-file text-indigo-400"></i> <span class="truncate text-xs">${safeStr(doc.name)}</span></div><div class="flex gap-1"><button onclick="window.runLocalOCR('${doc.id}')" class="text-[10px] bg-slate-700 hover:bg-indigo-600 text-slate-300 hover:text-white px-2 rounded transition" title="OCR"><i class="fa-solid fa-eye"></i></button><button onclick="window.removeDocument('${doc.id}')" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
-                fileList.appendChild(li);
-            });
-            fileCount.textContent = `${state.documents.length} Dosya`;
-        }
-        
-        // --- Event Binding ---
-        window.runLocalOCR = runLocalOCR;
-        window.removeDocument = (id) => { state.documents = state.documents.filter(d=>d.id!==id); state.nodes = state.nodes.filter(n=>n.refId!==id); saveState(); renderFileList(); };
-        window.closePageViewer = () => document.getElementById('page-viewer-overlay').classList.add('hidden');
-        window.viewDocumentPage = async function(docId, pageNum) {
-            const doc = state.documents.find(d => d.id === docId); if (!doc) return;
-            document.getElementById('page-viewer-overlay').classList.remove('hidden'); document.getElementById('viewer-title').textContent = `${doc.name}`; document.getElementById('viewer-error').classList.add('hidden');
-            const viewerCanvas = document.getElementById('page-viewer-canvas'); const simpleContent = document.getElementById('simple-viewer-content');
-            if (state.renderTask) { state.renderTask.cancel(); state.renderTask = null; }
-            if (doc.type === 'pdf' && doc.pdfDocProxy) {
-                viewerCanvas.classList.remove('hidden'); simpleContent.classList.add('hidden');
-                try {
-                    const page = await doc.pdfDocProxy.getPage(pageNum); const viewport = page.getViewport({ scale: 1.5 });
-                    viewerCanvas.width = viewport.width; viewerCanvas.height = viewport.height; const context = viewerCanvas.getContext('2d');
-                    state.renderTask = page.render({ canvasContext: context, viewport: viewport }); await state.renderTask.promise;
-                    if (state.lastQuery) {
-                        const textContent = await page.getTextContent(); const keywords = state.lastQuery.toLowerCase().trim().split(/\s+/).filter(w => w.length > 0);
-                        context.globalAlpha = 0.4; context.fillStyle = '#facc15'; 
-                        textContent.items.forEach(item => { if (keywords.some(k => item.str.toLowerCase().includes(k))) { const tx = pdfjsLib.Util.transform(viewport.transform, item.transform); const fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3])); context.fillRect(tx[4], tx[5] - fontHeight, item.width * viewport.scale, fontHeight * 1.2); } });
-                        context.globalAlpha = 1.0;
-                    }
-                } catch(e) { if(e.name!=='RenderingCancelledException') document.getElementById('viewer-error').classList.remove('hidden'); }
-            } else {
-                viewerCanvas.classList.add('hidden'); simpleContent.classList.remove('hidden');
-                if (doc.type === 'image' && doc.fileBlob) { simpleContent.innerHTML = `<img src="${URL.createObjectURL(doc.fileBlob)}" class="max-w-full h-auto mx-auto border border-slate-300 shadow-md">`; }
-                else { simpleContent.innerHTML = `<div class="whitespace-pre-wrap font-mono text-xs overflow-auto h-full p-4 bg-slate-50">${safeStr(doc.fullText || "Boş")}</div>`; }
-            }
-        };
-
-        // --- Event Listeners ---
-        document.getElementById('history-toggle-btn').onclick = () => { historySidebar.classList.toggle('sidebar-closed'); historySidebar.classList.toggle('sidebar-open'); };
-        document.getElementById('close-history-btn').onclick = () => { historySidebar.classList.add('sidebar-closed'); historySidebar.classList.remove('sidebar-open'); };
-        clearDataBtn.addEventListener('click', () => { if(window.confirm("Tüm veriler silinecek. Emin misiniz?")) { localStorage.clear(); location.reload(); } });
-        document.getElementById('start-quiz-btn').onclick = startQuiz;
-        document.getElementById('prepare-cards-btn').onclick = prepareFlashcards;
-        document.getElementById('suggest-btn').onclick = suggestQuestions;
-        document.getElementById('btn-saved-quiz').onclick = () => { if (state.quizHistory.length > 0) { state.currentQuizIndex = state.quizHistory.length - 1; displayQuiz(state.currentQuizIndex); } };
-        document.getElementById('btn-saved-cards').onclick = () => { if (state.flashcardHistory.length > 0) { state.currentFlashcardSetIndex = state.flashcardHistory.length - 1; updateCardUI(); document.getElementById('flashcard-overlay').classList.remove('hidden'); } };
-        document.getElementById('read-selection-btn').onmousedown = (e) => { e.preventDefault(); readSelection(); };
-        document.getElementById('send-btn').onclick = handleSearch;
-        document.getElementById('close-flashcards-btn').onclick = () => document.getElementById('flashcard-overlay').classList.add('hidden');
         document.getElementById('prev-fc').onclick = () => { if(state.currentCardIndex > 0) { state.currentCardIndex--; updateCardUI(); }};
-        document.getElementById('next-fc').onclick = () => { if(state.currentCardIndex < state.flashcards.length - 1) { state.currentCardIndex++; updateCardUI(); }};
-        document.getElementById('close-viewer-btn').onclick = window.closePageViewer;
-        document.getElementById('viewer-body').onclick = (e) => { if(e.target.id === 'viewer-body' || e.target.id === 'page-viewer-canvas') window.closePageViewer(); };
-        document.getElementById('concepts-btn').onclick = () => showDocSelector('extractConcepts', 'Kavramlar İçin Belge Seç', 'pink');
-        document.getElementById('podcast-btn').onclick = () => showDocSelector('generatePodcast', 'Senaryo İçin Belge Seç', 'indigo');
-        document.getElementById('critique-btn').onclick = () => showDocSelector('analyzeCritique', 'Analiz İçin Belge Seç', 'rose');
-        document.getElementById('diagram-btn').onclick = () => showDocSelector('generateDiagram', 'Diyagram İçin Belge Seç', 'orange');
-        document.getElementById('explain-selection-btn').onmousedown = (e) => { e.preventDefault(); 
-             const s = window.getSelection().toString().trim(); if(!s) { alert("Metin seçin."); return; }
-             (async()=>{ const l = addLoader("Açıklanıyor..."); const res = await callGemini(`Explain concisely in text language: "${s}"`); removeLoader(l); if(res) addMessage(`<div class="bg-slate-800/50 p-3 rounded border-l-4 border-purple-500"><div class="text-purple-300 font-bold text-xs mb-1">"${s.substring(0,30)}..."</div>${res}</div>`, 'bot', true); })();
+        document.getElementById('next-fc').onclick = () => { if(state.currentCardIndex < state.flashcardHistory[state.currentFlashcardSetIndex].data.length - 1) { state.currentCardIndex++; updateCardUI(); }};
+
+        // Mobile Doc Selector
+        function showMobileDocSelector(cbName) {
+            if(state.documents.length===0) return addMessage("Lütfen önce dosya yükleyin.",'bot');
+            if(state.documents.length===1) { if(cbName==='analyzeQuizTopics') analyzeTopics(state.documents[0].id, 'quiz'); else if(cbName==='analyzeFlashcardTopics') analyzeTopics(state.documents[0].id, 'flashcard'); else window[cbName](state.documents[0].id); return; }
+            let html = `<div class="flex flex-col gap-2 bg-slate-800 p-2 rounded">`;
+            state.documents.forEach(d => {
+                let func = `window.${cbName}('${d.id}')`;
+                if(cbName === 'analyzeQuizTopics') func = `window.analyzeTopics('${d.id}', 'quiz')`;
+                if(cbName === 'analyzeFlashcardTopics') func = `window.analyzeTopics('${d.id}', 'flashcard')`;
+                html+=`<button onclick="${func}" class="bg-slate-700 p-2 rounded text-left text-xs text-white border border-slate-600">${safeStr(d.name)}</button>`
+            });
+            addMessage(html+'</div>', 'bot', true);
+        }
+
+        // Button Assignments
+        window.analyzeTopics = analyzeTopics; // Make global
+        document.getElementById('diagram-btn').onclick = () => showMobileDocSelector('generateDiagram');
+        document.getElementById('podcast-btn').onclick = () => showMobileDocSelector('generatePodcast');
+        document.getElementById('start-quiz-btn').onclick = () => showMobileDocSelector('analyzeQuizTopics');
+        document.getElementById('prepare-cards-btn').onclick = () => showMobileDocSelector('analyzeFlashcardTopics');
+        document.getElementById('close-flashcards-btn').onclick = () => document.getElementById('flashcard-overlay').classList.add('hidden');
+
+        // File & Chat
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            for(let i=0; i<files.length; i++) {
+                const f = files[i]; const id='d-'+Date.now()+i;
+                let txt = "İçerik..."; let pages = [];
+                // PDF Logic (Simplified)
+                if(f.name.endsWith('.pdf')) {
+                    try {
+                        const buffer = await f.arrayBuffer(); const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buffer)}).promise;
+                        txt = "";
+                        for(let j=1; j<=Math.min(pdf.numPages, 20); j++) { const p = await pdf.getPage(j); const c = await p.getTextContent(); const t = c.items.map(s=>s.str).join(' '); txt+=t+" "; pages.push({number:j, text:t}); }
+                    } catch(e) { console.error(e); txt="Okuma hatası"; }
+                } else { txt = await f.text(); }
+                
+                state.documents.push({id:id, name:f.name, fullText: txt, pages: pages});
+                const li = document.createElement('li'); li.className="text-xs text-white bg-slate-700 p-1 rounded mb-1 truncate"; li.textContent = f.name;
+                document.getElementById('file-list').appendChild(li);
+                addMessage(`📄 ${f.name} yüklendi.`, 'bot');
+            }
+        });
+
+        document.getElementById('send-btn').onclick = async () => {
+            const q = userInput.value.trim(); if(!q) return;
+            addMessage(q, 'user'); userInput.value='';
+            // Context building
+            let context = state.documents.map(d => `Doküman: ${d.name}\n${d.fullText.substring(0,5000)}`).join("\n\n");
+            const res = await callGemini(`Sen DEHA'sın. Cevapla:\n${context}\nSoru: ${q}`);
+            if(res) addMessage(res.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'), 'bot', true);
         };
         
-        saveApiKeyBtn.onclick = () => { if(apiKeyInput.value.trim()) { localStorage.setItem('deha_api_key', apiKeyInput.value.trim()); apiKeyInput.blur(); const icon = saveApiKeyBtn.querySelector('i'); icon.className = "fa-solid fa-check text-emerald-400"; setTimeout(() => icon.className = "fa-solid fa-check", 1000); } };
-        userInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') { e.preventDefault(); handleSearch(); } });
-
-        // --- Initialization ---
-        function loadState() {
-            try {
-                state.nodes = []; resizeCanvas(); if(appW && appH) state.nodes.push(new Node(appW/2, appH/2, 'core', 'DEHA', null));
-                const savedDocs = localStorage.getItem('deha_documents_v2');
-                if (savedDocs) { const parsedDocs = JSON.parse(savedDocs); state.documents = parsedDocs; renderFileList(); parsedDocs.forEach((d) => { addNode(d.name, d.id, d.type || 'doc'); }); if (parsedDocs.length > 0) document.getElementById('memory-badge').classList.remove('hidden'); }
-                const savedHistory = localStorage.getItem('deha_history'); if(savedHistory) { state.chatHistory = JSON.parse(savedHistory); renderHistorySidebar(); }
-                const qh = localStorage.getItem('deha_quiz_history'); if(qh) state.quizHistory = JSON.parse(qh);
-                const fh = localStorage.getItem('deha_flashcard_history'); if(fh) state.flashcardHistory = JSON.parse(fh);
-                const savedKey = localStorage.getItem('deha_api_key'); if(savedKey) apiKeyInput.value = savedKey;
-                updateSavedButtons();
-            } catch (e) { console.error("Load error:", e); }
-        }
-
-        class Node {
-            constructor(x,y,t,l,ref) { this.x=x; this.y=y; this.type=t; this.label=l; this.refId=ref; this.radius = t==='core' ? 50 : 12; this.color = t==='core' ? '#6366f1' : `hsl(${Math.random()*360}, 70%, 60%)`; this.vx = (Math.random()-0.5)*0.5; this.vy = (Math.random()-0.5)*0.5; this.pulse = 0; this.relevance = 0; }
-            update() { if(this.type !== 'core') { this.x += this.vx; this.y += this.vy; if(this.x < 20 || this.x > appW-20) this.vx *= -1; if(this.y < 20 || this.y > appH-20) this.vy *= -1; } else { this.pulse += 0.03; } }
-            draw() {
-                ctx.beginPath();
-                if(this.type === 'core') {
-                    const p = Math.sin(this.pulse)*5; let r = this.radius + p; const g = ctx.createRadialGradient(this.x, this.y, 5, this.x, this.y, r); g.addColorStop(0, '#a5b4fc'); g.addColorStop(0.5, '#4f46e5'); g.addColorStop(1, 'rgba(67, 56, 202, 0)');
-                    ctx.fillStyle = g; ctx.arc(this.x, this.y, r, 0, Math.PI*2); ctx.fill();
-                    ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(99, 102, 241, 0.5)'; ctx.beginPath(); ctx.ellipse(this.x, this.y, r+10, r+2, this.pulse, 0, Math.PI*2); ctx.stroke();
-                    ctx.strokeStyle = 'rgba(129, 140, 248, 0.5)'; ctx.beginPath(); ctx.ellipse(this.x, this.y, r+2, r+10, -this.pulse, 0, Math.PI*2); ctx.stroke();
-                    ctx.fillStyle = 'white'; ctx.font = 'bold 16px Inter'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText("DEHA", this.x, this.y);
-                } else { ctx.fillStyle = this.color; ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cbd5e1'; ctx.font = '10px Inter'; ctx.textAlign='center'; ctx.fillText(this.label.substring(0,10), this.x, this.y + 20); }
-            }
-        }
-        function addNode(label, ref, type) { if(!appW) resizeCanvas(); state.nodes.push(new Node(appW/2, appH/2, type, label, ref)); }
-        function animate() { if(!appW) return; ctx.clearRect(0,0,appW,appH); let core = state.nodes.find(n=>n.type==='core'); if(!core) { core = new Node(appW/2, appH/2, 'core', 'DEHA', null); state.nodes.unshift(core); } core.x = appW/2; core.y = appH/2; state.nodes.forEach(n => { if(n !== core) { ctx.beginPath(); ctx.moveTo(core.x, core.y); ctx.lineTo(n.x, n.y); ctx.strokeStyle = n.relevance > 0 ? n.color : 'rgba(255,255,255,0.05)'; ctx.lineWidth = n.relevance > 0 ? 2 : 0.5; ctx.stroke(); } n.update(); n.draw(); }); requestAnimationFrame(animate); }
-        
-        // --- Interactivity Updates (Clicking Nodes) ---
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-            const clickedNode = state.nodes.find(node => Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < (node.radius + 5));
-            if (clickedNode && clickedNode.type !== 'core') {
-                 const doc = state.documents.find(d => d.id === clickedNode.refId);
-                 if (doc) { window.viewDocumentPage(doc.id, 1); addMessage(`<strong>${doc.name}</strong> görselleştiriciden açıldı.`, 'bot', true); }
-            }
-        });
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-            const hoverNode = state.nodes.find(node => Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < node.radius);
-            canvas.style.cursor = hoverNode ? 'pointer' : 'default';
-        });
-
-        window.addEventListener('resize', resizeCanvas); resizeCanvas(); loadState(); animate();
+        // Load Key
+        const k = localStorage.getItem('deha_api_key'); if(k) document.getElementById('api-key-input').classList.add('hidden');
     });
     </script>
 </body>
